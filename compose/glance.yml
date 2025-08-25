@@ -1,3 +1,5 @@
+name: glance
+
 services:
   glance:
     container_name: glance
@@ -6,8 +8,12 @@ services:
     volumes:
       - ../configs/glance:/app/config
       - ../assets/glance:/app/assets
+      - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
-      # Optionally, also mount docker socket if you want to use the docker containers widget
-      # - /var/run/docker.sock:/var/run/docker.sock:ro
-    ports:
-      - 8081:8080
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - infra-network
+
+networks:
+  infra-network:
+    external: true
