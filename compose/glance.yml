@@ -1,6 +1,23 @@
 name: glance
 
 services:
+  glance-custom-api:
+    labels:
+      glance.parent: glance
+      glance.name: Glance Custom API
+    build:
+      context: ../glance-custom-api
+    container_name: glance-custom-api
+    restart: unless-stopped
+    volumes:
+      - ../glance-custom-api:/app:cached
+      - ../glance-custom-api/credentials:/app/credentials:ro
+      - /app/.venv
+    ports:
+      - "8081:8081"
+    networks:
+      - infra-network
+
   glance:
     labels:
       glance.name: Glance
@@ -27,6 +44,8 @@ services:
       - infra-network
     secrets:
       - pihole-password
+    depends_on:
+      - glance-custom-api
 
 secrets:
   pihole-password:
