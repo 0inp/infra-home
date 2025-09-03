@@ -2,6 +2,12 @@ name: glance
 
 services:
   glance:
+    labels:
+      glance.name: Glance
+      glance.icon: di:glance
+      glance.url: http://glance.pi
+      glance.description: Glance dashboard
+      glance.id: glance
     container_name: glance
     image: glanceapp/glance
     restart: unless-stopped
@@ -11,8 +17,20 @@ services:
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /proc/stat:/proc/stat:ro
+      - /proc/meminfo:/proc/meminfo:ro
+      - /proc/uptime:/proc/uptime:ro
+      - /proc/loadavg:/proc/loadavg:ro
+      - /sys/class/net:/sys/class/net:ro
+      - /sys/block:/sys/block:ro
     networks:
       - infra-network
+    secrets:
+      - pihole-password
+
+secrets:
+  pihole-password:
+    file: ../secrets/pihole/pihole-password.txt
 
 networks:
   infra-network:

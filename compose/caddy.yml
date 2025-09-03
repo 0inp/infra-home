@@ -2,8 +2,12 @@ name: caddy
 
 services:
   caddy:
-    image: caddy:latest
     container_name: caddy
+    labels:
+      glance.name: Caddy
+      glance.icon: si:caddy
+      glance.description: Caddy
+    image: caddy:latest
     restart: unless-stopped
     ports:
       - "80:80"

@@ -3,6 +3,11 @@ name: pihole
 services:
   pihole:
     container_name: pihole
+    labels:
+      glance.name: Pihole
+      glance.icon: si:pihole
+      glance.url: https://pihole.pi
+      glance.description: Pihole
     image: pihole/pihole:latest
     platform: linux/arm/v7
     network_mode: host
