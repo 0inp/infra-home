@@ -4,9 +4,15 @@ version = "0.1.0"
 description = "Glance custom API endpoints to fetch personal data (youtube, github, etc)"
 requires-python = ">=3.11"
 dependencies = [
-    "fastapi[standard]>=0.116.1",
-    "google-api-python-client>=2.181.0",
-    "google-auth-httplib2>=0.2.0",
-    "google-auth-oauthlib>=1.2.2",
-    "uvicorn>=0.35.0",
+  "fastapi[standard]>=0.116.1",
+  "google-api-python-client>=2.181.0",
+  "google-auth-httplib2>=0.2.0",
+  "google-auth-oauthlib>=1.2.2",
+  "pydantic>=2.11.7",
+  "uvicorn>=0.35.0",
 ]
+
+[tool.pyright]
+venvPath = "."
+venv = ".venv"
+pythonVersion = "3.12"
