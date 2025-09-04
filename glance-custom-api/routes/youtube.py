@@ -12,6 +12,9 @@ router = APIRouter()
 SCOPES: list[str] = ["https://www.googleapis.com/auth/youtube.readonly"]
 CLIENT_SECRET_FILE: str = "credentials/client_secret.json"
 TOKEN_FILE: str = "credentials/token.json"
+from schemas.youtube.activities import ActivityItem, ActivityListResponse
+from schemas.youtube.subscriptions import SubscriptionItem, SubscriptionListResponse
+from schemas.youtube.videos import VideoItem, VideoListResponse
 
 
 def get_youtube_client() -> any:
@@ -25,21 +28,22 @@ def get_youtube_client() -> any:
     )
     return googleapiclient.discovery.build("youtube", "v3", credentials=creds)
 
-def get_all_subscriptions(youtube_client) -> list:
+
+def get_all_subscriptions(youtube_client: Resource) -> list[SubscriptionItem]:
     """Fetch all subscriptions for the authenticated user, handling pagination."""
-    subscriptions = []
+    subscriptions: list[SubscriptionItem] = []
     next_page_token = None
 
     while True:
-        response = youtube_client.subscriptions().list(
-            part="snippet",
-            mine=True,
-            maxResults=50,
-            pageToken=next_page_token
-        ).execute()
+        response = (
+            youtube_client.subscriptions()  # type: ignore[attr-defined]
+            .list(part="snippet", mine=True, maxResults=50, pageToken=next_page_token)
+            .execute()
+        )
 
-        subscriptions.extend(response.get("items", []))
-        next_page_token = response.get("nextPageToken")
+        paged_subscriptions = SubscriptionListResponse(**response)
+        subscriptions.extend(paged_subscriptions.items)
+        next_page_token = paged_subscriptions.nextPageToken
         if not next_page_token:
             break
 
@@ -47,45 +51,51 @@ def get_all_subscriptions(youtube_client) -> list:
     return subscriptions
 
 def fetch_recent_videos(youtube_client, subscriptions) -> list:
+def fetch_recent_videos_ids(
+    youtube_client: Resource, subscriptions: list[SubscriptionItem]
+) -> list[str]:
     """Return a list of video IDs from activities in the last week."""
     one_week_ago = datetime.now(timezone.utc) - timedelta(days=7)
-    recent_videos_ids = []
+    recent_videos_ids: list[str] = []
 
     for sub in subscriptions:
-        channel_id = sub["snippet"]["resourceId"]["channelId"]
-        response = youtube_client.activities().list(
-            part="contentDetails,snippet",
-            channelId=channel_id,
-            publishedAfter=one_week_ago.isoformat(),
-            maxResults=50
-        ).execute()
+        channel_id = sub.snippet.resourceId["channelId"]
+        response = (
+            youtube_client.activities()  # type: ignore[attr-defined]
+            .list(
+                part="contentDetails,snippet",
+                channelId=channel_id,
+                publishedAfter=one_week_ago.isoformat(),
+                maxResults=1,
+            )
+            .execute()
+        )
+        activities: list[ActivityItem] = ActivityListResponse(**response).items
 
-        for item in response.get("items", []):
-            upload = item.get("contentDetails", {}).get("upload")
-            if upload and "videoId" in upload:
-                recent_videos_ids.append(upload["videoId"])
+        for item in activities:
+            upload = item.contentDetails.upload
+            if upload:
+                recent_videos_ids.append(upload.videoId)
 
-    logger.info("Fetched %d recent videos from all subscriptions", len(recent_videos_ids))
+    logger.info(
+        "Fetched %d recent videos from all subscriptions", len(recent_videos_ids)
+    )
     return recent_videos_ids
 
-def fetch_videos_metadata(youtube_client, video_ids) -> list:
-    """Fetch video details in chunks of 50 IDs."""
-    def chunked(lst, n):
-        for i in range(0, len(lst), n):
-            yield lst[i:i + n]
 
-    all_videos = []
-    for batch in chunked(video_ids, 50):
-        response = youtube_client.videos().list(
-            part="snippet,contentDetails,statistics",
-            id=",".join(batch)
-        ).execute()
-        all_videos.extend(response.get("items", []))
+def fetch_video_metadata(youtube_client: Resource, video_id: str) -> VideoItem:
+    """Fetch video details."""
 
     logger.info("Fetched metadata for %d videos", len(all_videos))
-    return all_videos
+    response = (
+        youtube_client.videos()  # type: ignore[attr-defined]
+        .list(part="snippet,contentDetails", id=video_id)
+        .execute()
+    )
+    return VideoListResponse(**response).items[0]
 
-def render_html(videos) -> str:
+
+def render_html(videos: list[VideoItem]) -> str:
     """Render Glance-compatible HTML for a list of videos."""
     html = """
     <style>
@@ -110,10 +120,10 @@ def render_html(videos) -> str:
     """
 
     for video in videos:
-        vid_id = video["id"]
-        title = video["snippet"]["title"]
-        thumb = video["snippet"]["thumbnails"]["medium"]["url"]
-        url = f"https://www.youtube.com/watch?v={vid_id}"
+        vid_id: str = video.id
+        title: str = video.snippet.title
+        thumb: HttpUrl = video.snippet.thumbnails["medium"].url
+        url: str = f"https://www.youtube.com/watch?v={vid_id}"
 
         html += f"""
         <div class="video-card">
@@ -129,12 +139,17 @@ def render_html(videos) -> str:
 
 
 @router.get("/youtube/latest")
-def youtube_latest() -> Response:
-    youtube_client = get_youtube_client()
-    subscriptions = get_all_subscriptions(youtube_client)
-    recent_video_ids = fetch_recent_videos(youtube_client, subscriptions)
-    videos_metadata = fetch_videos_metadata(youtube_client, recent_video_ids)
-    html_content = render_html(videos_metadata)
+def youtube_latest(request: Request) -> Response:
+    youtube_client: Resource = request.app.state.youtube_client
+    subscriptions: list[SubscriptionItem] = get_all_subscriptions(youtube_client)
+    recent_video_ids: list[str] = fetch_recent_videos_ids(youtube_client, subscriptions)
+    videos_metadatas: list[VideoItem] = []
+    for recent_video_id in recent_video_ids:
+        video_metadata: VideoItem = fetch_video_metadata(
+            youtube_client, recent_video_id
+        )
+        videos_metadatas.append(video_metadata)
+    html_content: str = render_html(videos_metadatas)
 
     return Response(
         content=html_content,
