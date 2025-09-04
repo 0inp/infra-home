@@ -1,34 +1,38 @@
-import os
 import logging
 from datetime import datetime, timedelta, timezone
-from fastapi import APIRouter, Response
-import google.oauth2.credentials
-import googleapiclient.discovery
-import googleapiclient.errors
 
-logger = logging.getLogger(__name__)
-router = APIRouter()
+from cachetools import TTLCache, cached
+from fastapi import APIRouter, Request, Response
+from googleapiclient.discovery import Resource
+from pydantic import HttpUrl
 
-SCOPES: list[str] = ["https://www.googleapis.com/auth/youtube.readonly"]
-CLIENT_SECRET_FILE: str = "credentials/client_secret.json"
-TOKEN_FILE: str = "credentials/token.json"
 from schemas.youtube.activities import ActivityItem, ActivityListResponse
 from schemas.youtube.subscriptions import SubscriptionItem, SubscriptionListResponse
 from schemas.youtube.videos import VideoItem, VideoListResponse
 
-
-def get_youtube_client() -> any:
-    """Return an authenticated YouTube client using stored token.json."""
-    if not os.path.exists(TOKEN_FILE):
-        logger.error("Token file not found at %s", TOKEN_FILE)
-        raise RuntimeError("Token file not found. Run OAuth flow locally to generate it.")
-
-    creds = google.oauth2.credentials.Credentials.from_authorized_user_file(
-        TOKEN_FILE, SCOPES
-    )
-    return googleapiclient.discovery.build("youtube", "v3", credentials=creds)
+# Cache 1 day for subscriptions
+subscriptions_cache = TTLCache(maxsize=1000, ttl=3600 * 24)
 
 
+# Cache 1 hour for subscriptions' activities
+subscription_activities_cache = TTLCache(maxsize=1000, ttl=3600)
+
+
+def subscriptions_activities_key(youtube_client, subscriptions: list[SubscriptionItem]):
+    # Only use channel IDs as key
+    channel_ids = tuple(sub.snippet.resourceId["channelId"] for sub in subscriptions)
+    return channel_ids
+
+
+# Cache 7 day for video details
+video_cache = TTLCache(maxsize=1000, ttl=3600 * 24 * 7)
+
+
+logger = logging.getLogger(__name__)
+router = APIRouter()
+
+
+@cached(subscriptions_cache)
 def get_all_subscriptions(youtube_client: Resource) -> list[SubscriptionItem]:
     """Fetch all subscriptions for the authenticated user, handling pagination."""
     subscriptions: list[SubscriptionItem] = []
@@ -47,10 +51,11 @@ def get_all_subscriptions(youtube_client: Resource) -> list[SubscriptionItem]:
         if not next_page_token:
             break
 
-    logger.info("Fetched %d subscriptions", len(subscriptions))
+    logger.info(f"Fetched {len(subscriptions)} subscriptions")
     return subscriptions
 
-def fetch_recent_videos(youtube_client, subscriptions) -> list:
+
+@cached(subscription_activities_cache, key=subscriptions_activities_key)
 def fetch_recent_videos_ids(
     youtube_client: Resource, subscriptions: list[SubscriptionItem]
 ) -> list[str]:
@@ -83,10 +88,10 @@ def fetch_recent_videos_ids(
     return recent_videos_ids
 
 
+@cached(video_cache)
 def fetch_video_metadata(youtube_client: Resource, video_id: str) -> VideoItem:
     """Fetch video details."""
 
-    logger.info("Fetched metadata for %d videos", len(all_videos))
     response = (
         youtube_client.videos()  # type: ignore[attr-defined]
         .list(part="snippet,contentDetails", id=video_id)
