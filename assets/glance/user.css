@@ -1,0 +1,27 @@
+
+/* General layout for Glance */
+body {
+    display: flex;
+    flex-direction: row; /* Arrange items in a row */
+    gap: 20px; /* Space between columns */
+    padding: 20px;
+}
+
+/* Main content area */
+.main-content {
+    flex: 3; /* Takes up 3 parts of the available space */
+    min-width: 0; /* Allow content to shrink */
+}
+
+/* Sidebar area */
+.sidebar {
+    flex: 1; /* Takes up 1 part of the available space */
+    min-width: 250px; /* Minimum width for the sidebar */
+    max-width: 350px; /* Maximum width for the sidebar */
+}
+
+/* Ensure the GitHub feed (release-grid) fits within its container */
+.release-grid {
+    width: 100%;
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+}

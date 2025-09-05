@@ -1,6 +1,6 @@
 FROM python:3.12-slim
 
-RUN apt update && apt install curl build-essential -y
+RUN apt update && apt install curl build-essential libffi-dev -y
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh
 ENV PATH="/root/.local/bin/:$PATH"
 

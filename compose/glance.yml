@@ -11,12 +11,14 @@ services:
     restart: unless-stopped
     volumes:
       - ../glance-custom-api:/app:cached
-      - ../glance-custom-api/credentials:/app/credentials:ro
+      - ../glance-custom-api/credentials/token.json:/app/credentials/token.json:ro
       - /app/.venv
     ports:
       - "8081:8081"
     networks:
       - infra-network
+    secrets:
+      - github-token
 
   glance:
     labels:
@@ -50,6 +52,8 @@ services:
 secrets:
   pihole-password:
     file: ../secrets/pihole/pihole-password.txt
+  github-token:
+    file: ../secrets/github/github-token.txt
 
 networks:
   infra-network:

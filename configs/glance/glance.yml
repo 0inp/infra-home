@@ -60,10 +60,17 @@ pages:
 
       - size: full
         widgets:
-          - type: extension
-            url: http://glance-custom-api:8081/youtube/latest
-            cache: 1s
-            allow-potentially-dangerous-html: true
+          - type: group
+            hide-header: true
+            widgets:
+              - type: extension
+                url: http://glance-custom-api:8081/github/feed
+                cache: 1s
+                allow-potentially-dangerous-html: true
+              - type: extension
+                url: http://glance-custom-api:8081/youtube/latest
+                cache: 1s
+                allow-potentially-dangerous-html: true
 
       - size: small
         widgets:
