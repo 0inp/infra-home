@@ -41,6 +41,8 @@ pages:
     columns:
       - size: small
         widgets:
+          - type: to-do
+            hide-header: true
           - type: clock
             hide-header: true
             hour-format: 24h
