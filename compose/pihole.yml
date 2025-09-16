@@ -6,7 +6,7 @@ services:
     labels:
       glance.name: Pihole
       glance.icon: si:pihole
-      glance.url: https://pihole.pi
+      glance.url: http://pihole.pi/admin
       glance.description: Pihole
     image: pihole/pihole:latest
     platform: linux/arm/v7
@@ -15,7 +15,7 @@ services:
       TZ: America/Guayaquil
       DNSMASQ_LISTENING: all
       FTLCONF_webserver_port: "8080o,[::]:8080o,8443os,[::]:8443os"
-      FTLCONF_dns_listeningMode: 'all'
+      FTLCONF_dns_listeningMode: "all"
     secrets:
       - pihole-password
     volumes:
