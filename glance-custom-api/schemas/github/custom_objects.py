@@ -1,9 +1,8 @@
-from dataclasses import dataclass
 from datetime import datetime
+from pydantic import BaseModel
 
 
-@dataclass
-class CustomGithubReaction:
+class CustomGithubReaction(BaseModel):
     plus_1: int
     minus_1: int
     laugh: int
@@ -14,13 +13,12 @@ class CustomGithubReaction:
     eyes: int
 
 
-@dataclass
-class CustomGithubItem:
-    repo_name: str
-    repo_url: str
-    release_name: str
-    release_published_at: datetime
-    release_url: str
-    release_reactions: CustomGithubReaction | None
-    release_body: str
+class CustomGithubItem(BaseModel):
+    title: str
+    title_url: str
+    subtitle: str | None
+    subtitle_url: str | None
+    item_date: datetime
+    reactions: CustomGithubReaction | None
+    body: str | None
     avatar_url: str
