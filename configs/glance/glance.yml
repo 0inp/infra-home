@@ -93,7 +93,7 @@ pages:
               pihole:
                 name: Pihole
                 description: Home server Adblock with Pihole
-                url: https://pihole.pi
+                url: http://pihole.pi/admin
                 icon: sh:piholevault
                 hide: false
           - type: dns-stats
