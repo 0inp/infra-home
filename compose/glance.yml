@@ -11,7 +11,7 @@ services:
     restart: unless-stopped
     volumes:
       - ../glance-custom-api:/app:cached
-      - ../glance-custom-api/credentials/token.json:/app/credentials/token.json:ro
+      - ../glance-custom-api/credentials/token.json:/app/credentials/token.json
       - /app/.venv
     ports:
       - "8081:8081"
