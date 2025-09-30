@@ -1,0 +1,84 @@
+services:
+  grafana:
+    labels:
+      glance.name: Monitoring
+      glance.icon: di:grafana
+      glance.url: http://grafana.pi
+      glance.description: Grafana dashboard
+      glance.id: monitoring
+    image: grafana/grafana:10.4.2
+    container_name: grafana
+    restart: unless-stopped
+    environment:
+      - GF_SERVER_ROOT_URL=http://grafana.pi
+      - TZ=America/Guayaquil
+    volumes:
+      - grafana:/var/lib/grafana
+      - ../configs/monitoring/grafana/provisioning:/etc/grafana/provisioning
+    networks:
+      - infra-network
+
+  prometheus:
+    labels:
+      glance.parent: monitoring
+      glance.name: Prometheus
+    image: prom/prometheus:v2.51.2
+    container_name: prometheus
+    restart: unless-stopped
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.console.libraries=/usr/share/prometheus/console_libraries"
+      - "--web.console.templates=/usr/share/prometheus/consoles"
+      - "--web.external-url=http://prometheus.pi"
+    volumes:
+      - prometheus:/prometheus
+      - ../configs/monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - infra-network
+
+  cadvisor:
+    labels:
+      glance.parent: monitoring
+      glance.name: Cadvisor
+    image: gcr.io/cadvisor/cadvisor:v0.49.1
+    container_name: cadvisor
+    restart: unless-stopped
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    devices:
+      - /dev/kmsg
+    networks:
+      - infra-network
+
+  pihole-exporter:
+    labels:
+      glance.parent: monitoring
+      glance.name: Pihole-Exporter
+    image: ekofr/pihole-exporter:latest
+    container_name: pihole-exporter
+    restart: unless-stopped
+    ports:
+      - "9617:9617"
+    environment:
+      - PIHOLE_HOSTNAME=192.168.18.13
+      - PIHOLE_PORT=8080
+      - PIHOLE_PASSWORD=qfpleSRoZ5
+      - DEBUG=1
+      - PORT=9617
+    networks:
+      - infra-network
+
+volumes:
+  grafana:
+    driver: local
+  prometheus:
+    driver: local
+
+networks:
+  infra-network:
+    external: true

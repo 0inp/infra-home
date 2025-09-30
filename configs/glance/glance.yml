@@ -96,6 +96,12 @@ pages:
                 url: http://pihole.pi/admin
                 icon: sh:piholevault
                 hide: false
+              grafana:
+                name: Grafana
+                description: Home server Grafana stats dashboard
+                url: http://grafana.pi
+                icon: di:grafana
+                hide: false
           - type: dns-stats
             hide-header: true
             service: pihole-v6
