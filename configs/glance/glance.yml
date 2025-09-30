@@ -87,7 +87,7 @@ pages:
               glance:
                 name: Glance
                 description: Home server dashboard with Glance
-                url: https://glance.pi
+                url: http://glance.pi
                 icon: di:glance
                 hide: false
               pihole:
