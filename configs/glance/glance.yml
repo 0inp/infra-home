@@ -90,26 +90,14 @@ pages:
                 url: http://glance.pi
                 icon: di:glance
                 hide: false
-              pihole:
-                name: Pihole
-                description: Home server Adblock with Pihole
-                url: http://pihole.pi/admin
-                icon: sh:piholevault
-                hide: false
+
               grafana:
                 name: Grafana
                 description: Home server Grafana stats dashboard
                 url: http://grafana.pi
                 icon: di:grafana
                 hide: false
-          - type: dns-stats
-            hide-header: true
-            service: pihole-v6
-            url: http://pihole.pi/
-            username: admin
-            password: ${secret:pihole-password}
-            hide-top-domains: true
-            hour-format: 24h
+
           - type: server-stats
             hide-header: true
             cache: 30s

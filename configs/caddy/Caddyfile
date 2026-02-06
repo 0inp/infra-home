@@ -1,8 +1,3 @@
-# Pihole
-http://pihole.pi {
-    reverse_proxy 192.168.18.13:8080
-}
-
 # Glance
 http://glance.pi {
     reverse_proxy glance:8080

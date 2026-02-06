@@ -55,23 +55,6 @@ services:
     networks:
       - infra-network
 
-  pihole-exporter:
-    labels:
-      glance.parent: monitoring
-      glance.name: Pihole-Exporter
-    image: ekofr/pihole-exporter:latest
-    container_name: pihole-exporter
-    restart: unless-stopped
-    ports:
-      - "9617:9617"
-    environment:
-      - PIHOLE_HOSTNAME=192.168.18.13
-      - PIHOLE_PORT=8080
-      - PIHOLE_PASSWORD=qfpleSRoZ5
-      - DEBUG=1
-      - PORT=9617
-    networks:
-      - infra-network
 
 volumes:
   grafana:

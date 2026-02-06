@@ -10,7 +10,7 @@ This project is for setting up and managing my home server infrastructure.
 
 ## Current Services
 
--   **Pi-hole:** A network-wide ad blocker.
+-   **AdGuard:** A network-wide ad blocker.
 -   **Glance:** A self-hosted dashboard to monitor the server.
 -   **Custom FastAPI Backend:** A small backend that provides custom endpoints for the Glance dashboard, including:
     -   Latest videos from YouTube subscriptions.
@@ -35,7 +35,7 @@ The networking is managed by Caddy. Caddy is a powerful, enterprise-ready, open 
 
 Each service is exposed through a subdomain of a primary domain. For example:
 
--   `pihole.my-domain.com`
+-   `adguard.my-domain.com`
 -   `glance.my-domain.com`
 
 Caddy automatically handles the SSL certificates for each subdomain.
@@ -49,4 +49,4 @@ The `docker-compose.yml` files are configured to use a custom network called `ca
 -   **Caddy:** For reverse proxying and automatic HTTPS.
 -   **FastAPI:** For the custom backend.
 -   **Glance:** For the dashboard.
--   **Pi-hole:** For ad blocking.
+-   **AdGuard:** For ad blocking.

@@ -44,14 +44,10 @@ services:
       - /sys/block:/sys/block:ro
     networks:
       - infra-network
-    secrets:
-      - pihole-password
     depends_on:
       - glance-custom-api
 
 secrets:
-  pihole-password:
-    file: ../secrets/pihole/pihole-password.txt
   github-token:
     file: ../secrets/github/github-token.txt
 
