@@ -1,3 +1,12 @@
+# AdGuard Home
+http://adguard.pi {
+    reverse_proxy 192.168.18.13:80 {
+        transport http {
+            tls_insecure_skip_verify
+        }
+    }
+}
+
 # Glance
 http://glance.pi {
     reverse_proxy glance:8080
