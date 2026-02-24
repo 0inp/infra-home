@@ -10,6 +10,9 @@ CLIENT_SECRET_FILE: str = "credentials/client_secret.json"
 
 def main():
     """Runs the OAuth 2.0 flow to generate a token file."""
+    # Ensure credentials directory exists
+    os.makedirs("credentials", exist_ok=True)
+
     if not os.path.exists(CLIENT_SECRET_FILE):
         print(f"Error: Client secret file not found at {CLIENT_SECRET_FILE}")
         print(

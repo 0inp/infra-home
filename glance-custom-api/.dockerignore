@@ -1,0 +1,19 @@
+# Ignore files that shouldn't be in the Docker image
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+.env
+.venv/
+
+# Ignore development files
+.vscode/
+.idea/
+.DS_Store
+
+# Ignore build artifacts
+*.lock
+
+# Ignore credentials (they'll be volume-mounted)
+credentials/

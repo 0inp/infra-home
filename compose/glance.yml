@@ -10,8 +10,7 @@ services:
     container_name: glance-custom-api
     restart: unless-stopped
     volumes:
-      - ../glance-custom-api:/app:cached
-      - ../glance-custom-api/credentials/token.json:/app/credentials/token.json
+      - ./glance-custom-api:/app
       - /app/.venv
     ports:
       - "8081:8081"

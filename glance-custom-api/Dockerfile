@@ -1,38 +1,33 @@
 FROM python:3.12-slim
 
-RUN apt update && apt install curl build-essential libffi-dev -y
-RUN curl -LsSf https://astral.sh/uv/install.sh | sh
-ENV PATH="/root/.local/bin/:$PATH"
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    build-essential \
+    libffi-dev \
+    && rm -rf /var/lib/apt/lists/*
 
-# Install the project into `/app`
+# Install uv (Python package manager)
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+ENV PATH="/root/.local/bin:$PATH"
+
+# Set working directory
 WORKDIR /app
 
-# Enable bytecode compilation
-ENV UV_COMPILE_BYTECODE=1
+# Copy only the files needed for dependency installation
+COPY pyproject.toml uv.lock ./
 
-# Copy from the cache instead of linking since it's a mounted volume
-ENV UV_LINK_MODE=copy
+# Install dependencies
+RUN uv sync --locked --no-install-project --no-dev
 
-# Ensure installed tools can be executed out of the box
-ENV UV_TOOL_BIN_DIR=/usr/local/bin
+# Copy the rest of the application
+COPY . .
 
-# Install the project's dependencies using the lockfile and settings
-RUN --mount=type=cache,target=/root/.cache/uv \
-  --mount=type=bind,source=uv.lock,target=uv.lock \
-  --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
-  uv sync --locked --no-install-project --no-dev
+# Install the project
+RUN uv sync --locked --no-dev
 
-# Then, add the rest of the project source code and install it
-# Installing separately from its dependencies allows optimal layer caching
-COPY . /app
-RUN --mount=type=cache,target=/root/.cache/uv \
-  uv sync --locked --no-dev
-
-# Place executables in the environment at the front of the path
+# Set the PATH to include the virtual environment
 ENV PATH="/app/.venv/bin:$PATH"
 
-# Reset the entrypoint, don't invoke `uv`
-ENTRYPOINT []
-
-# Run the FastAPI application by default
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8081", "--reload"]
+# Run the application
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8081"]
