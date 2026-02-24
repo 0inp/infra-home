@@ -12,8 +12,9 @@ __pycache__/
 .idea/
 .DS_Store
 
-# Ignore build artifacts
+# Ignore build artifacts (but keep uv.lock for dependencies)
 *.lock
+!uv.lock
 
 # Ignore credentials (they'll be volume-mounted)
 credentials/
