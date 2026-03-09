@@ -1,56 +1,16 @@
 name: glance
 
 services:
-  glance-custom-api:
-    labels:
-      glance.parent: glance
-      glance.name: Glance Custom API
-    build:
-      context: ../glance-custom-api
-    container_name: glance-custom-api
-    restart: unless-stopped
-    volumes:
-      - ../glance-custom-api:/app
-      - /app/.venv
-    ports:
-      - "8081:8081"
-    networks:
-      - infra-network
-    secrets:
-      - github-token
-
   glance:
-    labels:
-      glance.name: Glance
-      glance.icon: di:glance
-      glance.url: http://glance.pi
-      glance.description: Glance dashboard
-      glance.id: glance
     container_name: glance
     image: glanceapp/glance
     restart: unless-stopped
     ports:
-      - "8080:8080"
+      - 8080:8080
     volumes:
       - ../configs/glance:/app/config
-      - ../assets/glance:/app/assets
-      - /etc/timezone:/etc/timezone:ro
-      - /etc/localtime:/etc/localtime:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /proc/stat:/proc/stat:ro
-      - /proc/meminfo:/proc/meminfo:ro
-      - /proc/uptime:/proc/uptime:ro
-      - /proc/loadavg:/proc/loadavg:ro
-      - /sys/class/net:/sys/class/net:ro
-      - /sys/block:/sys/block:ro
     networks:
       - infra-network
-    depends_on:
-      - glance-custom-api
-
-secrets:
-  github-token:
-    file: ../secrets/github/github-token.txt
 
 networks:
   infra-network:
