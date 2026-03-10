@@ -2,6 +2,12 @@ name: glance
 
 services:
   glance:
+    labels:
+      glance.name: Glance
+      glance.icon: di:glance
+      glance.url: https://dietpi.tail00f31b.ts.net/glance
+      glance.description: Glance dashboard
+      glance.id: glance
     container_name: glance
     image: glanceapp/glance
     restart: unless-stopped
