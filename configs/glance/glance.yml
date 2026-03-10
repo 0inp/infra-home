@@ -1,3 +1,7 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/not-first/glance-schema/master/schema.json
+server:
+  base-url: /glance
+
 pages:
   - name: Home
     # Optionally, if you only have a single page you can hide the desktop navigation for a cleaner look

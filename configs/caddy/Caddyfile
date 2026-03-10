@@ -7,17 +7,8 @@ http://adguard.pi {
     }
 }
 
-# Glance
-http://glance.pi {
-    reverse_proxy glance:8080
-}
-
-# Grafana
-http://grafana.pi {
-    reverse_proxy grafana:3000
-}
-
-# Prometheus
-http://prometheus.pi {
-    reverse_proxy prometheus:9090
+dietpi.tail00f31b.ts.net {
+    handle_path /glance* {
+        reverse_proxy glance:8080
+    }
 }

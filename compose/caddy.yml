@@ -16,6 +16,7 @@ services:
       - ../configs/caddy/Caddyfile:/etc/caddy/Caddyfile
       - /srv/caddy/data:/data
       - /srv/caddy/config:/config
+      - /var/run/tailscale/tailscaled.sock:/var/run/tailscale/tailscaled.sock
     networks:
       - infra-network
 
