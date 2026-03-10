@@ -15,6 +15,15 @@ services:
       - 8080:8080
     volumes:
       - ../configs/glance:/app/config
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /proc/stat:/proc/stat:ro
+      - /proc/meminfo:/proc/meminfo:ro
+      - /proc/uptime:/proc/uptime:ro
+      - /proc/loadavg:/proc/loadavg:ro
+      - /sys/class/net:/sys/class/net:ro
+      - /sys/block:/sys/block:ro
     networks:
       - infra-network
 
