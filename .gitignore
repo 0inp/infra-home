@@ -1,2 +1,3 @@
 /secrets/
 /glance-custom-api/credentials/
+.ruff_cache/
