@@ -2,8 +2,8 @@
 
 # === CONFIG ===
 SRC=~/dev/infra-home/
-DEST=pi:/home/pi/infra-home/
-EXCLUDES=(".git/" "__pycache__/" "node_modules/")
+DEST=dietpi:/home/dietpi/infra-home/
+EXCLUDES=(".git/" "__pycache__/" "node_modules/" ".ruff_cache/")
 RSYNC_OPTIONS="-az --delete -v"
 
 # Join excludes into rsync format
