@@ -34,24 +34,186 @@ pages:
         widgets:
           - type: group
             widgets:
-              - type: hacker-news
-              - type: lobsters
-
-          - type: videos
-            channels:
-              - UCXuqSBlHAE6Xw-yeJA0Tunw # Linus Tech Tips
-              - UCR-DXc1voovS8nhAvccRZhg # Jeff Geerling
-              - UCsBjURrPoezykLs9EqgamOA # Fireship
-              - UCBJycsmduvYEL83R_U4JriQ # Marques Brownlee
-              - UCHnyfMqiRRG1u-2MsSQLbXA # Veritasium
-          - type: group
-            widgets:
-              - type: reddit
-                subreddit: technology
-                show-thumbnails: true
-              - type: reddit
-                subreddit: selfhosted
-                show-thumbnails: true
+              - type: rss
+                title: Tech
+                limit: 20
+                collapse-after: 10
+                cache: 5m
+                # https://github.com/tuan3w/awesome-tech-rss?tab=readme-ov-file
+                feeds:
+                  - url: https://github.com/tuan3w/awesome-tech-rss/blob/main/feeds.opml
+                  - url: https://thedecisionlab.com/feed/
+                  - url: https://nesslabs.com/feed
+                  - url: https://fs.blog/feed/
+                  - url: https://coffeeandjunk.substack.com/feed
+                  - url: https://commoncog.com/blog/rss/
+                  - url: https://feeds.feedburner.com/scotthyoung/HAHx
+                  - url: https://feeds.feedburner.com/bigthink/main
+                  - url: http://steveblank.com/feed/
+                  - url: https://geohot.github.io/blog/feed.xml
+                  - url: http://news.ycombinator.com/rss
+                  - url: http://guykawasaki.com/feed/
+                  - url: http://ben-evans.com/benedictevans?format=rss
+                  - url: http://firstround.com/review/feed.xml
+                  - url: http://blog.samaltman.com/posts.atom
+                  - url: http://andrewchen.co/feed/
+                  - url: https://bothsidesofthetable.com/feed
+                  - url: http://feeds.feedburner.com/BothSidesOfTheTable
+                  - url: http://feed.onstartups.com/onstartups
+                  - url: https://medium.com/feed/the-black-box-of-product-management
+                  - url: https://productlife.to/feed
+                  - url: https://lethain.com/feeds/
+                  - url: http://feeds.slashgear.com/slashgear
+                  - url: http://venturebeat.com/feed/
+                  - url: http://www.theverge.com/rss/full.xml
+                  - url: http://www.engadget.com/rss-full.xml
+                  - url: https://feeds2.feedburner.com/PennOlson
+                  - url: https://techcrunch.com/feed/
+                  - url: http://www.fastcodesign.com/rss.xml
+                  - url: https://techcrunch.com/startups/feed/
+                  - url: https://www.forbes.com/leadership/feed/
+                  - url: http://feeds.feedburner.com/fastcompany/headlines
+                  - url: http://www.forbes.com/entrepreneurs/index.xml
+                  - url: http://www.producthunt.com/feed
+                  - url: http://hnrss.org/show
+                  - url: https://hnrss.org/launches
+                  - url: http://feeds.feedburner.com/sachinrekhiblog
+                  - url: https://medium.com/feed/airtable-eng
+                  - url: https://medium.com/feed/medium-eng
+                  - url: https://medium.com/feed/paypal-engineering
+                  - url: https://medium.com/feed/pinterest-engineering
+                  - url: http://engineering.grab.com/feed.xml
+                  - url: https://slack.engineering/feed
+                  - url: http://githubengineering.com/atom.xml
+                  - url: https://developer.atlassian.com/blog/feed.xml
+                  - url: https://code.facebook.com/posts/rss
+                  - url: http://newsletter.grokking.org/?format=rss
+                  - url: http://www.ebaytechblog.com/feed/
+                  - url: http://labs.spotify.com/feed/
+                  - url: https://blog.twitter.com/engineering/en_us/blog.rss
+                  - url: https://stripe.com/blog/feed.rss
+                  - url: https://instagram-engineering.com/feed
+                  - url: https://blog.cloudflare.com/rss/
+                  - url: https://blog.asana.com/category/eng/feed/
+                  - url: https://engineering.canva.com/rss
+                  - url: https://medium.com/feed/airbnb-engineering
+                  - url: https://dropbox.tech/feed
+                  - url: https://wecode.wepay.com/feed.xml
+                  - url: https://engineering.atspotify.com/feed/
+                  - url: https://engineering.fb.com/feed/
+                  - url: https://www.mindtheproduct.com/feed/
+                  - url: https://jvns.ca/atom.xml
+                  - url: https://feeds.feedburner.com/martinkl?format=xml
+                  - url: https://overreacted.io/rss.xml
+                  - url: https://danluu.com/atom.xml
+                  - url: https://shopifyengineering.myshopify.com/blogs/engineering.atom
+                  - url: https://engineering.grab.com/feed.xml
+                  - url: https://joshwcomeau.com/rss.xml
+                  - url: https://eng.uber.com/feed/
+                  - url: https://blog.singleton.io/index.xml
+                  - url: https://sophiebits.com/atom.xml
+                  - url: https://amasad.me/rss
+                  - url: https://signal.org/blog/rss.xml
+                  - url: https://www.joelonsoftware.com/feed/
+                  - url: https://blog.pragmaticengineer.com/rss/
+                  - url: https://developer.nvidia.com/blog/feed
+                  - url: https://blog.ml.cmu.edu/feed/
+                  - url: https://deepmind.com/blog/feed/basic/
+                  - url: https://jalammar.github.io/feed.xml
+                  - url: http://distill.pub/rss.xml
+                  - url: https://lilianweng.github.io/lil-log/feed.xml
+                  - url: http://news.mit.edu/rss/topic/artificial-intelligence2
+                  - url: http://ruder.io/rss/index.rss
+                  - url: http://bair.berkeley.edu/blog/feed.xml
+                  - url: https://www.youtube.com/feeds/videos.xml?channel_id=UCcIXc5mJsHVYTZR1maL5l9w
+                  - url: http://blog.evjang.com/feeds/posts/default?alt=rss
+                  - url: https://openai.com/news/engineering/rss.xml
+                  - url: https://thegradient.pub/rss/
+                  - url: http://magenta.tensorflow.org/feed.xml
+                  - url: http://newsletter.ruder.io/?format=rss
+                  - url: http://googleresearch.blogspot.com/atom.xml
+                  - url: https://towardsdatascience.com/feed
+                  - url: https://www.unite.ai/feed/
+                  - url: https://www.grammarly.com/blog/feed/
+                  - url: https://evjang.com/feed
+                  - url: https://www.amazon.science/index.rss
+                  - url: http://www.reddit.com/r/MachineLearning/.rss
+                  - url: https://www.youtube.com/feeds/videos.xml?channel_id=UCZHmQk67mSJgfCCTn7xBfew
+                  - url: https://www.youtube.com/feeds/videos.xml?channel_id=UCbfYPyITQ-7l4upoX8nvctg
+                  - url: https://pytorch.org/feed
+                  - url: https://uxplanet.org/feed
+                  - url: https://www.nngroup.com/feed/rss/
+                  - url: http://feeds.feedburner.com/uxmovement
+                  - url: http://blog.invisionapp.com/feed/
+                  - url: https://uxmatters.com/index.xml
+                  - url: https://www.smashingmagazine.com/feed/
+                  - url: https://uxdesign.cc/feed
+                  - url: http://airbnb.design/feed/
+                  - url: https://web.dev/feed.xml
+                  - url: https://slack.design/feed/
+                  - url: https://feeds.feedburner.com/CssTricks
+                  - url: https://interaction-design.org/rss/site_news.xml
+                  - url: http://feeds.feedburner.com/PsychologyBlog
+                  - url: http://www.all-about-psychology.com/psychology.xml
+                  - url: http://www.socialpsychology.org/headlines.rss
+                  - url: https://nautil.us/rss/all
+                  - url: http://freakonomics.blogs.nytimes.com/feed/
+                  - url: https://www.psychologytoday.com/intl/rss.xml
+                  - url: http://neurosciencenews.com/feed/
+                  - url: https://sciencedaily.com/rss/mind_brain/neuroscience.xml
+                  - url: http://www.sharpbrains.com/feed/
+                  - url: http://nautil.us/rss/all
+                  - url: http://www.quantamagazine.org/feed/
+                  - url: http://www.nature.com/nature/current_issue/rss
+                  - url: https://news.mit.edu/rss/topic/science-technology-and-society
+                  - url: https://news.mit.edu/rss/research
+                  - url: https://www.sciencealert.com/rss
+                  - url: https://singularityhub.com/feed/
+                  - url: https://www.youtube.com/feeds/videos.xml?channel_id=UCqZQJ4600a9wIfMPbYc60OQ
+                  - url: http://feeds.feedburner.com/seomoz
+                  - url: http://feeds.feedburner.com/cmi-content-marketing
+                  - url: http://feeds.feedburner.com/KISSmetrics
+                  - url: http://rss.marketingprofs.com/marketingprofs/daily
+                  - url: http://feeds.feedburner.com/modernb2bmarketing
+                  - url: http://www.quicksprout.com/feed/
+                  - url: http://www.socialmediaexaminer.com/feed/
+                  - url: http://jwegan.com/feed/rss/
+                  - url: http://www.convinceandconvert.com/feed/
+                  - url: http://blog.hubspot.com/CMS/UI/Modules/BizBlogger/rss.aspx?tabid=6307&amp;moduleid=8441&amp;maxcount=25
+                  - url: http://sethgodin.typepad.com/seths_blog/atom.xml
+                  - url: http://backlinko.com/feed
+                  - url: http://feeds.feedburner.com/tedtalks_video
+                  - url: http://feeds.harvardbusiness.org/harvardbusiness/
+              - type: rss
+                title: Sports
+                limit: 20
+                collapse-after: 10
+                feeds:
+                  - url: https://rmcsport.bfmtv.com/rss/football/
+                  - url: https://rmcsport.bfmtv.com/rss/rugby/
+                  - url: https://rmcsport.bfmtv.com/rss/auto-moto/f1/
+                  - url: https://rmcsport.bfmtv.com/rss/jeux-olympiques/
+                  - url: https://rmcsport.bfmtv.com/rss/sports-extremes/
+                  - url: https://rmcsport.bfmtv.com/rss/sport-us/
+                  - url: https://rmcsport.bfmtv.com/rss/sports-d-hiver/
+                  - url: https://rmcsport.bfmtv.com/rss/societe/
+                  - url: https://www.franceinfo.fr/sports.rss
+              - type: rss
+                title: News
+                limit: 20
+                collapse-after: 10
+                feeds:
+                  - url: https://www.franceinfo.fr/france.rss
+                  - url: https://www.franceinfo.fr/monde.rss
+                  - url: https://www.franceinfo.fr/decouverte.rss
+                  - url: https://www.franceinfo.fr/culture.rss
+              - type: rss
+                title: Finances
+                limit: 20
+                collapse-after: 10
+                feeds:
+                  - url: https://www.franceinfo.fr/sports.rss
+                  - url: https://beatmarket.substack.com/feed
       - size: small
         widgets:
           - type: docker-containers
@@ -65,20 +227,8 @@ pages:
               glance:
                 name: Glance
                 description: Home server dashboard with Glance
-                url: http://glance.pi
+                url: https://dietpi.tail00f31b.ts.net/glance
                 icon: di:glance
-                hide: false
-              grafana:
-                name: Grafana
-                description: Home server Grafana stats dashboard
-                url: http://grafana.pi
-                icon: di:grafana
-                hide: false
-              adguard:
-                name: AdGuard
-                description: Home server AdGuard DNS
-                url: http://adguard.pi
-                icon: mdi:shield-home
                 hide: false
           - type: server-stats
             hide-header: true
