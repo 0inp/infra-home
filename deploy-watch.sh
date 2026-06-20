@@ -25,7 +25,7 @@ DEBOUNCE_DELAY=1
 LAST_RUN=0
 
 echo "Watching $SRC for changes..."
-fswatch -0 "$SRC" | while read -d "" event; do
+fswatch -0 --exclude='\.git/' "$SRC" | while read -d "" event; do
   NOW=$(date +%s)
   # Run sync if enough time passed since last run
   if ((NOW - LAST_RUN >= DEBOUNCE_DELAY)); then
