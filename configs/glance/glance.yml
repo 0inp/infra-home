@@ -41,7 +41,6 @@ pages:
                 cache: 5m
                 # https://github.com/tuan3w/awesome-tech-rss?tab=readme-ov-file
                 feeds:
-                  - url: https://github.com/tuan3w/awesome-tech-rss/blob/main/feeds.opml
                   - url: https://thedecisionlab.com/feed/
                   - url: https://nesslabs.com/feed
                   - url: https://fs.blog/feed/
@@ -82,7 +81,6 @@ pages:
                   - url: https://medium.com/feed/medium-eng
                   - url: https://medium.com/feed/paypal-engineering
                   - url: https://medium.com/feed/pinterest-engineering
-                  - url: http://engineering.grab.com/feed.xml
                   - url: https://slack.engineering/feed
                   - url: http://githubengineering.com/atom.xml
                   - url: https://developer.atlassian.com/blog/feed.xml
@@ -162,7 +160,6 @@ pages:
                   - url: http://neurosciencenews.com/feed/
                   - url: https://sciencedaily.com/rss/mind_brain/neuroscience.xml
                   - url: http://www.sharpbrains.com/feed/
-                  - url: http://nautil.us/rss/all
                   - url: http://www.quantamagazine.org/feed/
                   - url: http://www.nature.com/nature/current_issue/rss
                   - url: https://news.mit.edu/rss/topic/science-technology-and-society
@@ -212,7 +209,6 @@ pages:
                 limit: 20
                 collapse-after: 10
                 feeds:
-                  - url: https://www.franceinfo.fr/sports.rss
                   - url: https://beatmarket.substack.com/feed
       - size: small
         widgets:
