@@ -1,52 +1,96 @@
-# Infra-Home Project
+# Infra-Home
 
-This project is for setting up and managing my home server infrastructure.
+Home server infrastructure for a Raspberry Pi running DietPi, managed as code
+and synced live with `rsync`.
 
 ## Architecture
 
--   The entire infrastructure is based on Docker containers.
--   Each service is defined in a `docker-compose.yml` file.
--   `Caddy` is used as a reverse proxy to manage networking and provide HTTPS.
+All services run as Docker containers on a shared `infra-network` Docker bridge.
+Caddy acts as a reverse proxy and handles HTTPS via Tailscale.
 
-## Current Services
+```
+Tailscale (dietpi.tail00f31b.ts.net)
+      │
+   Caddy :80/:443
+      ├── /glance*  →  Glance dashboard
+      └── adguard.pi  →  AdGuard (192.168.18.13, separate device)
 
--   **AdGuard:** A network-wide ad blocker.
--   **Glance:** A self-hosted dashboard to monitor the server.
--   **Custom FastAPI Backend:** A small backend that provides custom endpoints for the Glance dashboard, including:
-    -   Latest videos from YouTube subscriptions.
-    -   A GitHub feed with the latest releases of starred repositories.
+infra-network (Docker bridge)
+  ├── caddy
+  ├── glance
+  ├── grafana
+  ├── prometheus
+  └── cadvisor
+```
 
-## Future Services
+## Services
 
-I am planning to add the following services:
+| Service    | Description                                  | Access                          |
+|------------|----------------------------------------------|---------------------------------|
+| Caddy      | Reverse proxy with automatic HTTPS           | Ports 80/443                    |
+| Glance     | Self-hosted dashboard                        | `<tailscale-host>/glance`       |
+| Grafana    | Metrics dashboards                           | `http://grafana.pi` (LAN only)  |
+| Prometheus | Metrics collection (cAdvisor, node, AdGuard) | `http://prometheus.pi` (LAN)    |
+| cAdvisor   | Docker container metrics                     | Internal only                   |
+| AdGuard    | Network-wide ad blocker (external device)    | `192.168.18.13`                 |
 
--   **Photo Storage:** Immich
--   **Note Taking:** Docmost (as a Notion alternative)
--   **AI Assistant:** (Details to be defined)
--   **Media Services:**
-    -   Radarr (for movies)
-    -   Sonarr (for TV shows)
-    -   Prowlarr (indexer manager)
-    -   A media player like Jellyfin or Plex.
+## Deployment
 
-## Networking
+Changes are synced in real-time to the remote server. Run the watcher once from
+your development machine:
 
-The networking is managed by Caddy. Caddy is a powerful, enterprise-ready, open source web server with automatic HTTPS written in Go.
+```bash
+./deploy-watch.sh
+```
 
-Each service is exposed through a subdomain of a primary domain. For example:
+This uses `fswatch` to watch the local directory and `rsync` to push changes to
+`dietpi:/home/dietpi/infra-home/`. The remote server applies changes without
+needing container restarts.
 
--   `adguard.my-domain.com`
--   `glance.my-domain.com`
+**Requires:** `fswatch` (`brew install fswatch`) and SSH access to `dietpi`.
 
-Caddy automatically handles the SSL certificates for each subdomain.
+## Repository Layout
 
-The `docker-compose.yml` files are configured to use a custom network called `caddy`. This allows Caddy to discover and route traffic to the other containers.
+```
+compose/            # Docker Compose files
+  network.yml       # Must be applied first — creates infra-network
+  caddy.yml
+  glance.yml
+  monitoring.yml    # Grafana + Prometheus + cAdvisor
+
+configs/            # Bind-mounted config files
+  caddy/Caddyfile
+  glance/glance.yml
+  monitoring/
+    prometheus/prometheus.yml
+    grafana/provisioning/datasources/prometheus.yml
+
+deploy-watch.sh     # Live-sync script (development use)
+```
+
+## Bootstrap (first run on a new server)
+
+```bash
+# 1. Create the shared network first
+docker compose -f compose/network.yml up -d
+
+# 2. Start services
+docker compose -f compose/caddy.yml up -d
+docker compose -f compose/glance.yml up -d
+docker compose -f compose/monitoring.yml up -d
+```
+
+## Planned Services
+
+- **Immich** — photo storage
+- **Docmost** — note-taking (Notion alternative)
+- **Media stack** — Radarr, Sonarr, Prowlarr, Jellyfin
 
 ## Tools
 
--   **Docker:** For containerization.
--   **Docker Compose:** For defining and running multi-container Docker applications.
--   **Caddy:** For reverse proxying and automatic HTTPS.
--   **FastAPI:** For the custom backend.
--   **Glance:** For the dashboard.
--   **AdGuard:** For ad blocking.
+- **Docker / Docker Compose** — containerisation
+- **Caddy** — reverse proxy, automatic HTTPS via Tailscale
+- **Glance** — dashboard with RSS, server stats, docker widget
+- **Grafana + Prometheus + cAdvisor** — monitoring
+- **AdGuard Home** — DNS-level ad blocking (external device)
+- **Tailscale** — secure remote access

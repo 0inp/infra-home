@@ -1,46 +1,66 @@
-# Infra-Home Project
+# Infra-Home — AI Agent Context
 
-This project is for setting up and managing my home server infrastructure.
+Home server infrastructure for a Raspberry Pi running DietPi.
+All services run as Docker containers sharing a single bridge network.
+
+## Your Role
+
+Act as a DevOps / infrastructure expert. Tasks include:
+
+- Adding new Docker Compose services
+- Configuring Caddy routes in `configs/caddy/Caddyfile`
+- Managing Docker volumes, networks, and service dependencies
+- Editing Glance dashboard config (`configs/glance/glance.yml`)
+- Editing Prometheus scrape config (`configs/monitoring/prometheus/prometheus.yml`)
+- Troubleshooting container and networking issues
+- Suggesting security and performance improvements
+
+## Important Operational Notes
+
+- **Do not restart containers.** Changes sync live via `deploy-watch.sh` (rsync
+  + fswatch). The remote server applies changes automatically.
+- **Never touch** `secrets/` or `glance-custom-api/credentials/`.
+- All compose files use `networks: infra-network: external: true`. The network
+  itself is defined in `compose/network.yml`.
 
 ## Architecture
 
-- The entire infrastructure is based on Docker containers.
-- Each service is defined in a `docker-compose.yml` file.
-- `Caddy` is used as a reverse proxy to manage networking and provide HTTPS.
+```
+Internet / LAN
+      │
+   Tailscale (dietpi.tail00f31b.ts.net)
+      │
+   Caddy :80/:443  ─────────── configs/caddy/Caddyfile
+      │
+      ├── /glance*  →  glance:8080
+      └── adguard.pi  →  192.168.18.13:80 (external device, self-signed cert)
 
-## Current Services
+infra-network (Docker bridge)
+  ├── caddy
+  ├── glance
+  ├── grafana    ← scraped by prometheus
+  ├── prometheus ← scrapes cadvisor, node-exporter, adguard
+  └── cadvisor
+```
 
-- **AdGuard:** A network-wide ad blocker.
-- **Glance:** A self-hosted dashboard to monitor the server.
-- **Custom FastAPI Backend:** A small backend that provides custom endpoints for
-  the Glance dashboard, including:
-  - Latest videos from YouTube subscriptions.
-  - A GitHub feed with the latest releases of starred repositories.
+## File Map
 
-## Future Services
+| File | Purpose |
+|------|---------|
+| `compose/network.yml` | Creates infra-network (prerequisite for all others) |
+| `compose/caddy.yml` | Caddy reverse proxy, binds Tailscale socket |
+| `compose/glance.yml` | Glance dashboard, mounts /proc /sys for server-stats widget |
+| `compose/monitoring.yml` | Grafana + Prometheus + cAdvisor stack |
+| `configs/caddy/Caddyfile` | Caddy routing rules |
+| `configs/glance/glance.yml` | Glance pages, widgets, RSS feeds |
+| `configs/monitoring/prometheus/prometheus.yml` | Prometheus scrape jobs |
+| `configs/monitoring/grafana/provisioning/` | Grafana auto-provisioning |
 
-I am planning to add the following services:
+## Conventions
 
-- **Photo Storage:** Immich
-- **Note Taking:** Docmost (as a Notion alternative)
-- **AI Assistant:** (Details to be defined)
-- **Media Services:**
-  - Radarr (for movies)
-  - Sonarr (for TV shows)
-  - Prowlarr (indexer manager)
-  - A media player like Jellyfin or Plex.
-
-## Role for OpenCode
-
-Your role in this project is to act as a DevOps and infrastructure expert. Your
-tasks include:
-
-- Helping me add new services to the `docker-compose.yml` files.
-- Configuring Caddy as a reverse proxy for the services.
-- Managing Docker volumes and networks.
-- Troubleshooting container-related issues.
-- Suggesting best practices for security and performance.
-
-**Important Note:** The Docker containers are running on a remote server with
-sync and hot reload enabled. You should not need to restart the containers after
-making changes.
+- One compose file per logical service group, named after the primary service
+- Compose files include a top-level `name:` matching the filename
+- Pin image versions (e.g. `grafana/grafana:10.4.2`) — avoid `latest`
+- Add `glance.*` labels to new services so they appear in the Glance
+  docker-containers widget
+- Grafana timezone: `America/Guayaquil` | Glance timezones: Paris + Quito
