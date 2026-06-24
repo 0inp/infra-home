@@ -5,14 +5,17 @@ services:
     labels:
       glance.name: Monitoring
       glance.icon: di:grafana
-      glance.url: http://grafana.pi
+      glance.url: https://dietpi.tail00f31b.ts.net/grafana
       glance.description: Grafana dashboard
       glance.id: monitoring
-    image: grafana/grafana:10.4.2
+    image: grafana/grafana:12.1.1
     container_name: grafana
     restart: unless-stopped
+    depends_on:
+      - prometheus
     environment:
-      - GF_SERVER_ROOT_URL=http://grafana.pi
+      - GF_SERVER_ROOT_URL=https://dietpi.tail00f31b.ts.net/grafana/
+      - GF_SERVER_SERVE_FROM_SUB_PATH=true
       - TZ=America/Guayaquil
     volumes:
       - grafana:/var/lib/grafana
@@ -27,6 +30,10 @@ services:
     image: prom/prometheus:v2.51.2
     container_name: prometheus
     restart: unless-stopped
+    depends_on:
+      - cadvisor
+      - adguard-exporter
+      - speedtest
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
       - "--storage.tsdb.path=/prometheus"
@@ -57,6 +64,27 @@ services:
     networks:
       - infra-network
 
+
+  adguard-exporter:
+    image: ghcr.io/henrywhitaker3/adguard-exporter:latest
+    container_name: adguard-exporter
+    labels:
+      glance.parent: monitoring
+      glance.name: AdGuard Exporter
+    restart: unless-stopped
+    env_file: ../secrets/adguard.env
+    networks:
+      - infra-network
+
+  speedtest:
+    image: ghcr.io/miguelndecarvalho/speedtest-exporter:latest
+    container_name: speedtest
+    labels:
+      glance.parent: monitoring
+      glance.name: Speedtest
+    restart: unless-stopped
+    networks:
+      - infra-network
 
 volumes:
   grafana:

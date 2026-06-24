@@ -1,15 +1,22 @@
-# AdGuard Home — runs on a separate physical device with a self-signed cert.
-# tls_insecure_skip_verify is intentional: internal LAN traffic only.
 http://adguard.pi {
-    reverse_proxy 192.168.18.13:80 {
-        transport http {
-            tls_insecure_skip_verify
-        }
-    }
+    reverse_proxy 192.168.18.13:3000
 }
 
 dietpi.tail00f31b.ts.net {
     handle_path /glance* {
         reverse_proxy glance:8080
+    }
+
+    handle_path /adguard* {
+        reverse_proxy http://192.168.18.13:3000 {
+            header_down Location "^/(.*)$" "/adguard/$1"
+        }
+    }
+
+    handle /grafana* {
+        reverse_proxy grafana:3000 {
+            header_up X-Forwarded-Proto https
+            header_up Host {http.request.host}
+        }
     }
 }
