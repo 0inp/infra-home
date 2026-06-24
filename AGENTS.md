@@ -23,6 +23,23 @@ Act as a DevOps / infrastructure expert. Tasks include:
 - All compose files use `networks: infra-network: external: true`. The network
   itself is defined in `compose/network.yml`.
 
+## Local Development Workflow
+
+- This repository is **local-only**. All changes are synced to the Raspberry Pi
+  automatically via `deploy-watch.sh`.
+- The script uses `fswatch` to monitor the local directory and `rsync` to push
+  changes to `dietpi:/home/dietpi/infra-home/`.
+- The remote server applies changes **without requiring container restarts**.
+
+## AI Tool Assumptions
+
+- **Edit files locally**: Always edit files in this repository. Do not use SSH
+  commands or remote edits unless explicitly requested.
+- **Assume sync**: Changes are automatically synced to the Raspberry Pi via
+  `deploy-watch.sh`. No manual deployment steps are needed.
+- **Validate locally**: Use local tools (e.g., `docker-compose config`, `caddy
+  validate`) to validate changes before applying them.
+
 ## Architecture
 
 ```

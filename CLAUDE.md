@@ -18,7 +18,8 @@ compose/          # Docker Compose files, one per service group
   network.yml     # Creates the shared "infra-network" bridge network (run first)
   caddy.yml       # Caddy reverse proxy
   glance.yml      # Glance dashboard
-  monitoring.yml  # Grafana + Prometheus + cAdvisor
+  monitoring.yml  # Grafana + Prometheus + cAdvisor + adguard-exporter
+  speedtest.yml   # Speedtest Prometheus exporter
 
 configs/          # Runtime config files (bind-mounted into containers)
   caddy/Caddyfile
@@ -26,6 +27,13 @@ configs/          # Runtime config files (bind-mounted into containers)
   monitoring/
     prometheus/prometheus.yml
     grafana/provisioning/datasources/prometheus.yml
+    grafana/provisioning/dashboards/dashboards.yml
+    grafana/provisioning/dashboards/pi-stats.json
+    grafana/provisioning/dashboards/speedtest.json
+    grafana/provisioning/dashboards/adguard.json
+
+secrets/          # Gitignored — create manually on the server
+  adguard.env     # ADGUARD_SERVERS, ADGUARD_USERNAMES, ADGUARD_PASSWORDS
 ```
 
 ## Services
@@ -34,10 +42,13 @@ configs/          # Runtime config files (bind-mounted into containers)
 |------------|------------------------------|-------------------------------------------|
 | Caddy      | caddy:2                      | Ports 80/443 on the host                  |
 | Glance     | glanceapp/glance             | Via Caddy at `/glance`                    |
-| Grafana    | grafana/grafana:10.4.2       | `http://grafana.pi` (internal)            |
-| Prometheus | prom/prometheus:v2.51.2      | `http://prometheus.pi` (internal)         |
-| cAdvisor   | gcr.io/cadvisor/cadvisor:... | Internal only                             |
-| AdGuard    | (external, not Docker)       | `192.168.18.13` — separate device        |
+| Grafana          | grafana/grafana:12.1.1             | `http://grafana.pi` (internal)          |
+| Prometheus       | prom/prometheus:v2.51.2            | `http://prometheus.pi` (internal)       |
+| cAdvisor         | gcr.io/cadvisor/cadvisor:...       | Internal only                           |
+| adguard-exporter | henrywhitaker3/adguard-exporter    | Internal only (port 9618)               |
+| Speedtest        | danopstech/speedtest_exporter      | Internal only (port 9798)               |
+| AdGuard Home     | (native install, not Docker)       | `http://192.168.18.13:3000` (LAN)      |
+| Node Exporter    | (native install, not Docker)       | `192.168.18.13:9100` (scraped by Prom) |
 
 ## Networking
 
@@ -48,9 +59,10 @@ External access goes through Caddy:
 - Tailscale domain: `dietpi.tail00f31b.ts.net` — routes `/glance*` to glance
 - Local DNS: `.pi` suffix (e.g. `grafana.pi`) resolved by AdGuard on the LAN
 
-AdGuard runs on a separate physical device at `192.168.18.13` (not a container).
-Caddy proxies to it using `tls_insecure_skip_verify` because AdGuard uses a
-self-signed cert on the LAN.
+AdGuard Home runs natively on the Pi at `192.168.18.13:3000` (web UI) and port 53
+(DNS). It is NOT a Docker container. The `adguard-exporter` container queries
+AdGuard's API and exposes Prometheus metrics on port 9618; credentials live in
+`secrets/adguard.env` (gitignored). Node Exporter also runs natively on the Pi.
 
 ## Key Constraints
 
