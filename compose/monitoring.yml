@@ -83,6 +83,14 @@ services:
       glance.parent: monitoring
       glance.name: Speedtest
     restart: unless-stopped
+    # The image's own healthcheck probes "localhost", which resolves to ::1
+    # while the exporter only listens on IPv4 - override it to hit 127.0.0.1.
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1:9798/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
     networks:
       - infra-network
 
